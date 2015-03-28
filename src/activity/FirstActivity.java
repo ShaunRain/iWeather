@@ -1,10 +1,10 @@
 package activity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import model.oneDay;
 
+import util.Adaptbitmap;
 import util.ParseData;
 
 import com.rain.iweather.R;
@@ -20,14 +20,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.audiofx.BassBoost.Settings;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 public class FirstActivity extends Activity {
 	private final int SPLASH_DISPLY_LENGTH = 2500;
+	private Adaptbitmap adapt;
 
 	private iWeatherDB iweatherdb;
 	private ParseData parseData;
@@ -53,10 +60,13 @@ public class FirstActivity extends Activity {
 				}
 			} else {
 				parseData = new ParseData("宝鸡", iweatherdb);
-				cityCount = 1;
+				cityList[0] = "宝鸡";
 				flag = true;
 			}
+			Log.d("index??", iweatherdb.loadDays(cityList[0]).size()+","+cityList.length);
 			oneDay oneday = iweatherdb.loadDays(cityList[0]).get(0);
+			
+
 			Intent foreground = new Intent(FirstActivity.this,
 					FirstActivity.class);
 			manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -94,6 +104,9 @@ public class FirstActivity extends Activity {
 		iweatherdb = iWeatherDB.getInstance(this);
 		allCity = iweatherdb.findAllCity();
 		cityCount = allCity.size();
+		if (cityCount == 0) {
+			cityCount++;
+		}
 		cityList = new String[cityCount];
 
 		if (!isConnected() && cityCount == 0) {

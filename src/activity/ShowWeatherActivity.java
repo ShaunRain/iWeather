@@ -15,9 +15,6 @@ import com.rain.iweather.R;
 import db.iWeatherDB;
 
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -25,16 +22,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.format.Time;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
@@ -274,9 +268,16 @@ public class ShowWeatherActivity extends Activity implements OnClickListener {
 				updateTime = da + "日" + ho + ":" + mi + ":" + se + "更新";
 				Toast.makeText(getApplicationContext(), "更新成功！", 1).show();
 			}
-			if (refreshButton.getAnimation() != null) {
-				refreshButton.clearAnimation();
-			}
+
+			new Handler().postDelayed(new Runnable() {
+
+				public void run() {
+					if (refreshButton.getAnimation() != null) {
+						refreshButton.clearAnimation();
+					}
+
+				}
+			}, 2000);
 
 		};
 	};
@@ -559,6 +560,7 @@ public class ShowWeatherActivity extends Activity implements OnClickListener {
 			if (isConnected()) {
 				Animation operatingAnim = AnimationUtils.loadAnimation(this,
 						R.anim.tip);
+				operatingAnim.setFillAfter(true);
 				LinearInterpolator lin = new LinearInterpolator();
 				operatingAnim.setInterpolator(lin);
 				if (operatingAnim != null) {

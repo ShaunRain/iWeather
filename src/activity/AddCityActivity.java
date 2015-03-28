@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import model.City;
 import model.oneDay;
 
+import util.Adaptbitmap;
 import util.ParseData;
 
 import com.rain.iweather.R;
@@ -24,11 +25,14 @@ import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.view.Display;
+import android.view.WindowManager;
 import android.widget.SearchView;
 import android.widget.SearchView.OnCloseListener;
 import android.widget.SearchView.OnQueryTextListener;
 
 public class AddCityActivity extends Activity {
+	private Adaptbitmap adapt;
 	private ParseData parseData;
 	private iWeatherDB iweatherdb;
 
@@ -39,6 +43,14 @@ public class AddCityActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_addcity);
+
+		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE))
+				.getDefaultDisplay();
+		Bitmap back = adapt.decodeSampledBitmapFromResource(getResources(),
+				R.drawable.up_title_blur, display.getWidth(),
+				display.getHeight());
+		Drawable background = new BitmapDrawable(back);
+		AddCityActivity.this.getWindow().setBackgroundDrawable(background);
 		// setBack();
 		citySearch = (SearchView) findViewById(R.id.sv_search);
 		iweatherdb = iWeatherDB.getInstance(this);
@@ -90,51 +102,6 @@ public class AddCityActivity extends Activity {
 			}
 		});
 
-	}
-
-	public void setBack() {
-		Resources res = getResources();
-		Bitmap bmp = BitmapFactory.decodeResource(res, R.drawable.up_title);
-		Drawable background = new BitmapDrawable(blurBitmap(bmp));
-		AddCityActivity.this.getWindow().setBackgroundDrawable(background);
-	}
-
-	public Bitmap blurBitmap(Bitmap bitmap) {
-
-		// Let's create an empty bitmap with the same size of the bitmap we want
-		// to blur
-		Bitmap outBitmap = Bitmap.createBitmap(bitmap.getWidth(),
-				bitmap.getHeight(), Config.ARGB_8888);
-
-		// Instantiate a new Renderscript
-		RenderScript rs = RenderScript.create(getApplicationContext());
-
-		// Create an Intrinsic Blur Script using the Renderscript
-		ScriptIntrinsicBlur blurScript = ScriptIntrinsicBlur.create(rs,
-				Element.U8_4(rs));
-
-		// Create the Allocations (in/out) with the Renderscript and the in/out
-		// bitmaps
-		Allocation allIn = Allocation.createFromBitmap(rs, bitmap);
-		Allocation allOut = Allocation.createFromBitmap(rs, outBitmap);
-
-		// Set the radius of the blur
-		blurScript.setRadius(25.f);
-
-		// Perform the Renderscript
-		blurScript.setInput(allIn);
-		blurScript.forEach(allOut);
-
-		// Copy the final bitmap created by the out Allocation to the outBitmap
-		allOut.copyTo(outBitmap);
-
-		// recycle the original bitmap
-		bitmap.recycle();
-
-		// After finishing everything, we destroy the Renderscript.
-		rs.destroy();
-
-		return outBitmap;
 	}
 
 }

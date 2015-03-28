@@ -201,13 +201,9 @@ public class ListOfCityActivity extends Activity implements OnClickListener {
 
 	public void confirmList() {
 		ArrayList<String> citys = iweatherdb.findAllCity();
+
 		if (citys.size() != count) {
-			cityList = new String[citys.size()];
-			int i = 0;
-			for (String cityName : citys) {
-				cityList[i] = cityName;
-				i++;
-			}
+			cityList = (String[]) citys.toArray();
 			Intent intent3 = new Intent(ListOfCityActivity.this,
 					ShowWeatherActivity.class);
 			intent3.putExtra("cityList", cityList);
